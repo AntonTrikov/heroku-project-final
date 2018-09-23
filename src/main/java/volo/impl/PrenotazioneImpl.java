@@ -191,18 +191,18 @@ public class PrenotazioneImpl implements PrenotazioneDao{
 	@Path("compagnia/{id}")
 	@Produces({"application/json"})
     public Response getPrenotazionePerCompagnia(@Context HttpHeaders headers, @PathParam("id") String is) throws Exception {
-		int id = Integer.parseInt(is);
+		int compagniaId = Integer.parseInt(is);
 		Response response=null;
 		if(!(ImplUtils.isAuthorized(headers)||ImplUtils.isAdmin(headers))) {
 			return response = Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 		PreparedStatement query = null;
 		Connection conn = null;
-		int compagnia=0; int slot=0; int tratta=0;
+		int prenotazione=0; int slot=0; int tratta=0;
 		List<Prenotazione> prenotazioni = new ArrayList<Prenotazione>();
 		try {
 			conn = Pg.pgConn();
-			query = conn.prepareStatement("select count(*) from compagnia where id="+id+";");
+			query = conn.prepareStatement("select count(*) from compagnia where id="+compagniaId+";");
 			ResultSet rs = query.executeQuery();
 			int count=0;
 			while(rs.next()) {
@@ -211,13 +211,13 @@ public class PrenotazioneImpl implements PrenotazioneDao{
 			if(count==0) {
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
-			query = conn.prepareStatement("select * from prenotazione where compagnia="+id+";");
+			query = conn.prepareStatement("select * from prenotazione where compagnia="+compagniaId+";");
 			rs = query.executeQuery();
 			while(rs.next()) {
-				compagnia = Integer.parseInt(rs.getString("compagnia"));
+				prenotazione = Integer.parseInt(rs.getString("id"));
 				slot = Integer.parseInt(rs.getString("slot"));
 				tratta = Integer.parseInt(rs.getString("tratta"));
-				prenotazioni.add(new Prenotazione(id,slot,compagnia,tratta));
+				prenotazioni.add(new Prenotazione(prenotazione,slot,compagniaId,tratta));
 			}
 			query.close();
 		} catch(Exception e) {
