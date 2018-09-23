@@ -142,7 +142,7 @@ public class TrattaImpl implements TrattaDao{
 	@Produces({"application/json"})
     public Response putTratta(@Context HttpHeaders headers, String is) throws Exception{
 		Response response=null;
-		if(!(ImplUtils.isAuthorized(headers)||ImplUtils.isAdmin(headers))) {
+		if(!(ImplUtils.isAdmin(headers))) {
 			return response = Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 		Tratta tratta = readTratta(true,is);
@@ -218,8 +218,17 @@ public class TrattaImpl implements TrattaDao{
 		Response response=null;
 		try {
 			conn = Pg.pgConn();
-			query = conn.prepareStatement("select * from tratta where id="+id+"");
+			query = conn.prepareStatement("select count(*) from tratta where id="+id+";");
 			ResultSet rs = query.executeQuery();
+			int rowcount = 0;
+			while(rs.next()) {
+				rowcount=rs.getInt("count");
+			}
+			if(rowcount==0) {
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+			query = conn.prepareStatement("select * from tratta where id="+id+"");
+			rs = query.executeQuery();
 			while(rs.next()) {
 				name = rs.getString("trattaname");
 				type = rs.getString("type");
@@ -390,10 +399,10 @@ public class TrattaImpl implements TrattaDao{
     }
 	@POST
 	@Consumes({"application/json"})
-	@Produces({"application/json"})
+	@Produces({"text/plain"})
 	public Response createTratta(@Context HttpHeaders headers, String is) throws Exception{
 		Response response=null;
-		if(!(ImplUtils.isAuthorized(headers)||ImplUtils.isAdmin(headers))) {
+		if(!(ImplUtils.isAdmin(headers))) {
 			return response = Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 		Tratta tratta = readTratta(false,is);
