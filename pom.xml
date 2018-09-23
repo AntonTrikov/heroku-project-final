@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>volo</groupId>
-    <artifactId>heroku-volo</artifactId>
+    <artifactId>heroku-volo-final</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>heroku-volo</name>
