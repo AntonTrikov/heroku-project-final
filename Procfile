@@ -1,0 +1,1 @@
+web: java -cp target/classes:target/dependency/* volo.heroku_volo.heroku.Main
